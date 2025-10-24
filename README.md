@@ -37,6 +37,12 @@ ConvoCraft demonstrates **full-stack web development skills** and **AI integrati
 
 ---
 
+## 🖼️ Screenshots
+
+![ConvoCraft Home](Screenshots/Screenshot_(96).png)  
+![New Conversation](Screenshots/Screenshot_(95).png)  
+![Chat Interface](Screenshots/Screenshot_(97).png)
+
 
 ## ⚡ Getting Started
 
