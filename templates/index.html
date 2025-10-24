@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ConvoCraft | AI Chatbot</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background: #0e1117;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: #151820;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 25px 20px;
+      border-right: 1px solid #2a2f3a;
+    }
+    .sidebar h2 {
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .new-chat-btn {
+      background: #2b6df6;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+    .new-chat-btn:hover {
+      background: #1851e5;
+    }
+    .sidebar-footer {
+      text-align: center;
+      font-size: 13px;
+      color: #b9bbc1;
+    }
+
+    /* Chat Area */
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 25px 40px;
+      overflow-y: auto;
+      background: #0e1117;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    .chat-header img {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .chat-header h4 {
+      margin: 0;
+      font-weight: 700;
+    }
+    .chat-header p {
+      margin: 0;
+      color: #9da1aa;
+    }
+
+    .chat-box {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .message {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+    }
+
+    .message img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .message .bubble {
+      max-width: 75%;
+      padding: 12px 18px;
+      border-radius: 16px;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .bot .bubble {
+      background: #20242d;
+      color: #e6e6e6;
+      border-top-left-radius: 0;
+    }
+
+    .user {
+      flex-direction: row-reverse;
+    }
+
+    .user .bubble {
+      background: #2b6df6;
+      color: #fff;
+      border-top-right-radius: 0;
+    }
+
+    .chat-input {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #151820;
+      padding: 12px 18px;
+      border-radius: 12px;
+    }
+
+    .chat-input input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .send-btn {
+      background: #2b6df6;
+      border: none;
+      color: white;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 18px;
+      transition: 0.3s;
+    }
+    .send-btn:hover {
+      background: #1851e5;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div>
+      <h2>ConvoCraft</h2>
+      <button class="new-chat-btn w-100 mt-4">
+        <i class="bi bi-plus-lg me-2"></i> New Conversation
+      </button>
+    </div>
+    <div class="sidebar-footer">
+      <p>Siva Rakshana</p>
+      <p>Powered by Groq API</p>
+    </div>
+  </div>
+
+  <!-- Main Chat Area -->
+  <div class="chat-area">
+    <div class="chat-header">
+      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712100.png" alt="Bot Avatar">
+      <div>
+        <h4>GroqBot</h4>
+        <p>Your Personal AI Companion</p>
+      </div>
+    </div>
+
+    <div class="chat-box" id="chat-box">
+      <div class="message bot">
+        <img src="https://cdn-icons-png.flaticon.com/512/4712/4712100.png" alt="Bot Avatar">
+        <div class="bubble">Hello! I’m ConvoCraft, how can I assist you today?</div>
+      </div>
+    </div>
+
+    <div class="chat-input">
+      <input type="text" id="user-input" placeholder="Type your message..." />
+      <button class="send-btn" id="send-btn"><i class="bi bi-send"></i></button>
+    </div>
+  </div>
+
+  <script>
+  const sendBtn = document.getElementById('send-btn');
+  const userInput = document.getElementById('user-input');
+  const chatBox = document.getElementById('chat-box');
+  const newChatBtn = document.querySelector('.new-chat-btn');
+
+  // Send message to backend
+  async function sendMessage() {
+    const message = userInput.value.trim();
+    if (!message) return;
+
+    // User message
+    const userMsg = document.createElement('div');
+    userMsg.classList.add('message', 'user');
+    userMsg.innerHTML = `
+      <img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" alt="User">
+      <div class="bubble">${message}</div>
+    `;
+    chatBox.appendChild(userMsg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    userInput.value = '';
+
+    // Send to backend Flask
+    const res = await fetch('/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message })
+    });
+    const data = await res.json();
+
+    // Bot response
+    const botMsg = document.createElement('div');
+    botMsg.classList.add('message', 'bot');
+    botMsg.innerHTML = `
+      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712100.png" alt="Bot">
+      <div class="bubble">${data.response}</div>
+    `;
+    chatBox.appendChild(botMsg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  // Clear chat when new conversation button is clicked
+  newChatBtn.addEventListener('click', () => {
+    chatBox.innerHTML = `
+      <div class="message bot">
+        <img src="https://cdn-icons-png.flaticon.com/512/4712/4712100.png" alt="Bot Avatar">
+        <div class="bubble">Hello! I’m ConvoCraft, how can I assist you today?</div>
+      </div>
+    `;
+  });
+
+  sendBtn.addEventListener('click', sendMessage);
+  userInput.addEventListener('keypress', e => {
+    if (e.key === 'Enter') sendMessage();
+  });
+</script>
+
+</body>
+</html>
